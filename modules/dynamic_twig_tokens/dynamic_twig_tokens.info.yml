@@ -1,5 +1,5 @@
-name: Динамические Twig переменные
+name: Динамические переменные
 type: module
-description: Встраивает возможность динамического добавления переменных Twig
+description: Встраивает возможность динамического добавления переменных
 package: Vesta
 core_version_requirement: ^8 || ^9 || ^10
