@@ -1,0 +1,5 @@
+name: Vesta Core
+type: module
+description: Модуль ядра Vesta
+package: МVesta
+core_version_requirement: ^9 || ^10
