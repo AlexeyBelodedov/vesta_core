@@ -1,0 +1,30 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Äîïîëíèòåëüíûå ïîëÿ module.
+ */
+//test
+function print_token($setting_name): void
+{
+    $config = \Drupal::config('dynamic_twig_tokens.settings');
+    $table_values = $config->get('table');
+    $table_arr = [];
+    foreach ($table_values as $key => $value) {
+        $table_arr[$value['variable_name']] = $value['variable_value'];
+    }
+    if (!empty($table_arr[$setting_name])) {
+        print $table_arr[$setting_name];
+    }
+}
+function dynamic_twig_tokens_preprocess(&$variables, $hook) {
+    $form_config = \Drupal::config('dynamic_twig_tokens.settings');
+    $table_values = $form_config->get('table');
+    $table_arr = [];
+    foreach ($table_values as $key => $value) {
+        if (!empty($value['variable_name'])) {
+            $variables[$value['variable_name']] = $value['variable_value'];
+        }
+    }
+}
+

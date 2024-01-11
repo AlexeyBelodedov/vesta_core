@@ -1,0 +1,16 @@
+dynamic_twig_tokens.settings_form:
+  path: '/admin/config/system/dynamic-twig-tokens'
+  defaults:
+    _title: 'Динамические Twig переменные'
+    _form: 'Drupal\dynamic_twig_tokens\Form\SettingsForm'
+  requirements:
+    _permission: 'administer dynamic_twig_tokens configuration'
+
+dynamic_twig_tokens.ajax:
+  path: '/dynamic_twig_tokens/ajax/save'
+  defaults:
+    _controller: 'Drupal\dynamic_twig_tokens\Controller\DynamicTwigController::saveFormAjax'
+    _format: json
+  requirements:
+    _access: 'TRUE'
+    _csrf_token: 'TRUE'

@@ -1,0 +1,38 @@
+# Schema for the configuration files of the Дополнительные поля module.
+additional_field.settings:
+  type: config_object
+  label: 'Дополнительные поля settings'
+  mapping:
+    phone_number:
+      type: tel
+      label: ''
+    mail:
+      type: email
+      label: ''
+    viber:
+      type: tel
+      label: ''
+    whatsapp:
+      type: tel
+      label: ''
+    vk:
+      type: string
+      label: ''
+    telegram:
+      type: string
+      label: ''
+    index:
+      type: string
+      label: ''
+    city:
+      type: string
+      label: ''
+    street:
+      type: string
+      label: ''
+    house:
+      type: string
+      label: ''
+    additional_info:
+      type: string
+      label: ''

@@ -1,0 +1,27 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Дополнительные поля module.
+ */
+
+function print_field_info($setting_name): void
+{
+    $config = \Drupal::config('additional_field.settings');
+    $my_setting = $config->get($setting_name);
+    print $my_setting;
+}
+function additional_field_preprocess(&$variables, $hook) {
+    $form_config = \Drupal::config('additional_field.settings');
+    $variables['get_phone'] = $form_config->get('phone_number');
+    $variables['get_mail'] = $form_config->get('mail');
+    $variables['get_viber'] = $form_config->get('viber');
+    $variables['get_whatsapp'] = $form_config->get('whatsapp');
+    $variables['get_vk'] = $form_config->get('vk');
+    $variables['get_tg'] = $form_config->get('telegram');
+    $variables['get_index'] = $form_config->get('index');
+    $variables['get_city'] = $form_config->get('city');
+    $variables['get_street'] = $form_config->get('street');
+    $variables['get_house'] = $form_config->get('house');
+    $variables['get_additional'] = $form_config->get('additional_info');
+}
