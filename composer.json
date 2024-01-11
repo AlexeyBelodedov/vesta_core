@@ -1,0 +1,14 @@
+{
+  "name": "drupal/vesta_core",
+  "description": "Модуль ядра Vesta",
+  "type": "drupal-module",
+  "license": "MIT License",
+  "minimum-stability": "dev",
+  "authors": [
+    {
+      "name": "Danila",
+      "homepage": "https://github.com/danila-k-open",
+      "role": "Maintainer"
+    }
+  ]
+}
