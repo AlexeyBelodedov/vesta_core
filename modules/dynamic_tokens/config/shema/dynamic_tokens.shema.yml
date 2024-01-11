@@ -1,0 +1,8 @@
+# Schema for the configuration files of the Динамические Переменные module.
+dynamic_tokens.settings:
+  type: config_object
+  label: 'Дополнительные поля settings'
+  mapping:
+    table:
+      type: table
+      label: ''

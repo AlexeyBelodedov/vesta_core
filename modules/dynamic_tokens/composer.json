@@ -1,0 +1,17 @@
+{
+  "name": "drupal/dynamic_twig_tokens",
+  "description": "Добавляет возможность создания кастомных переменных.",
+  "type": "drupal-module",
+  "license": "MIT License",
+  "minimum-stability": "dev",
+  "authors": [
+    {
+      "name": "Danila",
+      "homepage": "https://github.com/danila-k-open",
+      "role": "Maintainer"
+    }
+  ],
+  "require": {
+    "drupal/core": "^8.8 || ^9 || ^10"
+  }
+}

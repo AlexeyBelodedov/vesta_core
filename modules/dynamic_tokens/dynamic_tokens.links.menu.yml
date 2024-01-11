@@ -1,0 +1,6 @@
+dynamic_tokens.settings_form:
+  title: 'Динамические Переменные'
+  description: 'Динамические Переменные'
+  parent: system.admin_config_system
+  route_name: dynamic_tokens.settings_form
+  weight: 10

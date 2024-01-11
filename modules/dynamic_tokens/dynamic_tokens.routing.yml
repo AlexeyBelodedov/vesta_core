@@ -1,0 +1,16 @@
+dynamic_tokens.settings_form:
+  path: '/admin/config/system/dynamic-tokens'
+  defaults:
+    _title: 'Динамические переменные'
+    _form: 'Drupal\dynamic_tokens\Form\SettingsForm'
+  requirements:
+    _permission: 'administer dynamic_tokens configuration'
+
+dynamic_tokens.ajax:
+  path: '/dynamic_tokens/ajax/save'
+  defaults:
+    _controller: 'Drupal\dynamic_tokens\Controller\DynamicTokenController::saveFormAjax'
+    _format: json
+  requirements:
+    _access: 'TRUE'
+    _csrf_token: 'TRUE'
