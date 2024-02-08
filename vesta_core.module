@@ -6,3 +6,15 @@
  */
 
 // test comment
+
+function is_front_page() {
+    $requestStack = \Drupal::service('request_stack');
+    $request = $requestStack->getCurrentRequest();
+    $path = $request->getPathInfo();
+    if($path == '/'){
+        return true;
+    }
+    else{
+        return false;
+    }
+}
