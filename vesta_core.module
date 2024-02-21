@@ -5,7 +5,6 @@
  * Primary module hooks for Vesta Core module.
  */
 
-// test comment
 
 function is_front_page() {
     $requestStack = \Drupal::service('request_stack');
@@ -17,4 +16,34 @@ function is_front_page() {
     else{
         return false;
     }
+}
+
+
+//добавляет дополнительное поле page_is_front которое возвращает true/false в зависимости от страницы
+function vesta_theme_preprocess_page(&$variables, $hook) {
+    $variables['page_is_front'] = is_front_page();
+}
+
+//добавляет дополнительные переменные в поля для получения более точной информации
+function vesta_core_preprocess_field(&$variables, $hook) {
+    $request = \Drupal::request();
+    $route_match = \Drupal::routeMatch();
+    $title = \Drupal::service('title_resolver')->getTitle($request, $route_match->getRouteObject());
+    $parts = explode('.', \Drupal::routeMatch()->getRouteName());
+
+
+    $requestStack = \Drupal::service('request_stack');
+    $request = $requestStack->getCurrentRequest();
+    $path = $request->getPathInfo();
+
+    $variables['path'] = $path;
+
+
+    if (count($parts) >= 2) {
+        $secondWord = $parts[1];
+    }
+    $variables['page_title'] = $title;
+    $variables['page_type'] = $secondWord;
+
+    $variables['page_is_front'] = is_front_page();
 }
