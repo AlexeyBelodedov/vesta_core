@@ -5,3 +5,12 @@ additional_field.settings_form:
     _form: 'Drupal\additional_field\Form\SettingsForm'
   requirements:
     _permission: 'administer additional_field configuration'
+
+additional_field.ajax:
+  path: '/additional_field/ajax/save'
+  defaults:
+    _controller: 'Drupal\additional_field\Controller\AdditionalFieldController::saveFormAjax'
+    _format: json
+  requirements:
+    _access: 'TRUE'
+    _csrf_token: 'TRUE'

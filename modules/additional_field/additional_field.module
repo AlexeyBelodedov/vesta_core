@@ -9,8 +9,20 @@ function print_field_info($setting_name): void
 {
     $config = \Drupal::config('additional_field.settings');
     $my_setting = $config->get($setting_name);
-    print $my_setting;
+    $table_values = $config->get('table');
+    $table_arr = [];
+    foreach ($table_values as $key => $value) {
+        $table_arr[$value['variable_name']] = $value['variable_value'];
+    }
+    if(!empty($my_setting)){
+        print $my_setting;
+    }elseif (!empty($table_arr[$setting_name])) {
+        print $table_arr[$setting_name];
+    }else{
+        print "Ошибка переменной!";
+    }
 }
+
 function additional_field_preprocess(&$variables, $hook) {
     $form_config = \Drupal::config('additional_field.settings');
     $variables['get_phone'] = $form_config->get('phone_number');
@@ -24,4 +36,12 @@ function additional_field_preprocess(&$variables, $hook) {
     $variables['get_street'] = $form_config->get('street');
     $variables['get_house'] = $form_config->get('house');
     $variables['get_additional'] = $form_config->get('additional_info');
+
+    $table_values = $form_config->get('table');
+    $table_arr = [];
+    foreach ($table_values as $key => $value) {
+        if (!empty($value['variable_name'])) {
+            $variables[$value['variable_name']] = $value['variable_value'];
+        }
+    }
 }

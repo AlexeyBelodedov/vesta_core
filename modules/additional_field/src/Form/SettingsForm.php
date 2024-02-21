@@ -28,6 +28,11 @@ class SettingsForm extends ConfigFormBase {
      * {@inheritdoc}
      */
     public function buildForm(array $form, FormStateInterface $form_state): array {
+
+        $config = $this->config('additional_field.settings');
+        $table_values = $config->get('table') ?: [1 => ['variable_name' => '', 'variable_value' => '']];
+        $config->set('table', $table_values);
+
         $form['phone_number'] = [
             '#type' => 'textfield',
             '#description' => "Использование для php print_field_info('phone_number') <br> Использование для Twig {{get_phone}}",
@@ -127,11 +132,55 @@ class SettingsForm extends ConfigFormBase {
                 'placeholder' => t('Укажите необходимую информацию'),
             ),
         ];
+
+        $form['info'] = [
+            '#markup' => '<h3>Для вывода переменной в PHP использовать "<?php print_field_info("variable_name"); ?>"</h3><h3>Для вывода переменной в Twig использовать "{{variable_name}}"</h3>',
+        ];
+        $form['table'] = [
+            '#type' => 'table',
+            '#header' => [$this->t('Название переменной'), $this->t('Значение переменной')],
+            '#empty' => $this->t('Нет данных'),
+        ];
+        foreach ($table_values as $key => $value) {
+            $form['table'][$key]['variable_name'] = [
+                '#type' => 'textfield',
+                //'#title' => $this->t('Название переменной'),
+                '#default_value' => isset($value['variable_name']) ? $value['variable_name'] : '',
+            ];
+            $form['table'][$key]['variable_value'] = [
+                '#type' => 'textfield',
+                //'#title' => $this->t('Значение переменной'),
+                '#default_value' => isset($value['variable_value']) ? $value['variable_value'] : '',
+            ];
+        }
+        $form['actions']['add_row'] = [
+            '#type' => 'submit',
+            '#value' => $this->t('Добавить строку'),
+            '#submit' => ['::addRow'],
+//            '#ajax' => [
+//                'callback' => '::updAjaxCallback',//updAjaxCallback
+//                'event' => 'click',
+//                'wrapper' => 'table-wrapper',
+//            ],
+        ];
+
+        $form['actions']['del_row'] = [
+            '#type' => 'submit',
+            '#value' => $this->t('Удалить строку'),
+            '#submit' => ['::delRow'],
+//            '#ajax' => [
+//                'callback' => '::updAjaxCallback',//updAjaxCallback
+//                'event' => 'click',
+//                'wrapper' => 'table-wrapper',
+//            ],
+        ];
+
         $form['actions']['#type'] = 'actions';
         $form['actions']['submit'] = [
             '#type' => 'submit',
             '#value' => $this->t('Сохранить'),
         ];
+        $form['#tree'] = TRUE;
 
         return $form;
     }
@@ -140,7 +189,16 @@ class SettingsForm extends ConfigFormBase {
      * {@inheritdoc}
      */
     public function submitForm(array &$form, FormStateInterface $form_state): void {
-        $this->messenger()->addStatus($this->t('Данные успешно сохранены!'));
+
+        $table_values = [];
+
+        foreach ($form_state->getValue('table') as $value) {
+            $table_values[] = [
+                'variable_name' => $value['variable_name'],
+                'variable_value' => $value['variable_value'],
+            ];
+        }
+
         $this->config('additional_field.settings')
             ->set('phone_number', $form_state->getValue('phone_number'))
             ->set('mail', $form_state->getValue('mail'))
@@ -153,8 +211,49 @@ class SettingsForm extends ConfigFormBase {
             ->set('street', $form_state->getValue('street'))
             ->set('house', $form_state->getValue('house'))
             ->set('additional_info', $form_state->getValue('additional_info'))
+            ->set('table', $table_values)
             ->save();
+
+        $this->messenger()->addStatus($this->t('Данные успешно сохранены!'));
+
         parent::submitForm($form, $form_state);
+    }
+
+
+    /**
+     * Submit callback for adding a new row to the table.
+     */
+    public function addRow(array &$form, FormStateInterface $form_state) {
+
+        $config = $this->config('additional_field.settings');
+        $table_values = $form_state->getValue('table');
+        $current_count = count($table_values) + 1;
+        $table_values[] = [$current_count => ['variable_name' => '', 'variable_value' => '']];
+        $config->set('table', $table_values);
+        $config->save();
+        $form_state->setRebuild();
+
+
+        parent::submitForm($form, $form_state);
+    }
+    public function delRow(array &$form, FormStateInterface $form_state) {
+
+        $config = $this->config('additional_field.settings');
+        $table_values = $form_state->getValue('table');
+        $current_count = count($table_values) - 1;
+        unset($table_values[$current_count]);
+        $config->set('table', $table_values);
+        $config->save();
+        $form_state->setRebuild();
+
+
+        parent::submitForm($form, $form_state);
+    }
+    /**
+     * Ajax callback for adding a new row to the table.
+     */
+    public function updAjaxCallback(array &$form, FormStateInterface $form_state) {
+        return $form['table'];
     }
 
 }

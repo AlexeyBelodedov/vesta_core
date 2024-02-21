@@ -9,30 +9,12 @@ additional_field.settings:
     mail:
       type: email
       label: ''
-    viber:
-      type: tel
-      label: ''
-    whatsapp:
-      type: tel
-      label: ''
-    vk:
-      type: string
-      label: ''
-    telegram:
-      type: string
-      label: ''
-    index:
-      type: string
-      label: ''
-    city:
-      type: string
-      label: ''
-    street:
-      type: string
-      label: ''
-    house:
+    address:
       type: string
       label: ''
     additional_info:
       type: string
+      label: ''
+    table:
+      type: table
       label: ''
