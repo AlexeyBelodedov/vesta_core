@@ -11,8 +11,11 @@ function print_field_info($setting_name): void
     $my_setting = $config->get($setting_name);
     $table_values = $config->get('table');
     $table_arr = [];
-    foreach ($table_values as $key => $value) {
-        $table_arr[$value['variable_name']] = $value['variable_value'];
+
+    if(!empty($table_values)){
+        foreach ($table_values as $key => $value) {
+            $table_arr[$value['variable_name']] = $value['variable_value'];
+        }
     }
     if(!empty($my_setting)){
         print $my_setting;
