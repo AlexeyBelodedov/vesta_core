@@ -3,3 +3,5 @@ type: module
 description: Встраивает дополнительные поля
 package: Vesta
 core_version_requirement: ^9 || ^10
+dependencies:
+  - vesta_core
