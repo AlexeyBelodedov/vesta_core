@@ -9,8 +9,9 @@
 function is_front_page() {
     $requestStack = \Drupal::service('request_stack');
     $request = $requestStack->getCurrentRequest();
-    $path = $request->getPathInfo();
-    if($path == '/'){
+    $current_path = $request->getPathInfo();
+    $frontpage_path = \Drupal\Core\Url::fromRoute('<front>', [], ['absolute' => FALSE])->toString();
+    if($current_path == $frontpage_path){
         return true;
     }
     else{
