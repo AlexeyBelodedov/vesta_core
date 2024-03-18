@@ -4,7 +4,7 @@ additional_field.settings_form:
     _title: 'Дополнительные поля'
     _form: 'Drupal\additional_field\Form\SettingsForm'
   requirements:
-    _permission: 'administer additional_field configuration'
+    _permission: 'additional_info'
 
 additional_field.ajax:
   path: '/additional_field/ajax/save'
