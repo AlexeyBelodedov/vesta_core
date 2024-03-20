@@ -21,7 +21,7 @@ function is_front_page() {
 
 
 //добавляет дополнительное поле page_is_front которое возвращает true/false в зависимости от страницы
-function vesta_theme_preprocess_page(&$variables, $hook) {
+function vesta_core_preprocess_page(&$variables, $hook) {
     $variables['page_is_front'] = is_front_page();
 }
 
