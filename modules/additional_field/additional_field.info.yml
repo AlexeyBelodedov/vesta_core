@@ -3,5 +3,6 @@ type: module
 description: Встраивает дополнительные поля
 package: Vesta
 core_version_requirement: ^9 || ^10
+configure: additional_field.settings_form
 dependencies:
   - vesta_core
