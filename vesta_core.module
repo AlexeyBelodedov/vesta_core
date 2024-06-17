@@ -4,14 +4,42 @@
  * @file
  * Primary module hooks for Vesta Core module.
  */
+function watchdog($name, $message, $type = ''){
+    switch($type){
+        case 'error':
+            \Drupal::logger($name)->error($message);
+            break;
+        case 'alert':
+            \Drupal::logger($name)->alert($message);
+            break;
+        case 'debug':
+            \Drupal::logger($name)->debug($message);
+            break;
+        case 'critical':
+            \Drupal::logger($name)->critical($message);
+            break;
+        case 'emergency':
+            \Drupal::logger($name)->emergency($message);
+            break;
+        case 'notice':
+            \Drupal::logger($name)->notice($message);
+            break;
+        case 'warning':
+            \Drupal::logger($name)->warning($message);
+            break;
+        case 'info':
+        default:
+            \Drupal::logger($name)->info($message);
+            break;
+    }
+}
 
-
+//проверяет главную страницу
 function is_front_page() {
     $requestStack = \Drupal::service('request_stack');
     $request = $requestStack->getCurrentRequest();
-    $current_path = $request->getPathInfo();
-    $frontpage_path = \Drupal\Core\Url::fromRoute('<front>', [], ['absolute' => FALSE])->toString();
-    if($current_path == $frontpage_path){
+    $path = $request->getPathInfo();
+    if($path == '/'){
         return true;
     }
     else{
@@ -19,10 +47,177 @@ function is_front_page() {
     }
 }
 
+//проверяет страницу продукта
+function is_product_page() {
+    $product = \Drupal::routeMatch()->getParameter('commerce_product');
+    $product_type = null;
+    if(isset($product)) {
+        if ($product instanceof \Drupal\commerce_product\Entity\ProductInterface) {
+            $product_type = 'product--'.$product->bundle(); // Получить тип продукта
+        }
+    }
+    return $product_type;
+}
 
-//добавляет дополнительное поле page_is_front которое возвращает true/false в зависимости от страницы
+//проверяет страницу представления
+function is_view_page() {
+    $view = \Drupal::routeMatch()->getParameter('view_id');
+    $page_type = null;
+    if(isset($view)) {
+        $page_type = 'view--'.$view;
+    }
+    return $page_type;
+}
+
+//проверяет страницу термина
+function is_term_page() {
+    $term_page = null;
+    $term = \Drupal::routeMatch()->getParameter('taxonomy_term');
+    if(isset($term)) {
+        if ($term instanceof \Drupal\taxonomy\Entity\Term) {
+            $term_id = $term->bundle();
+            $term_page = 'term--'.$term_id;
+        }
+    }
+    return $term_page;
+}
+
+//добавляет классы в контейнер page
+function set_page_classes(&$variables){
+    $is_front_page = is_front_page();
+    if($is_front_page){
+        $variables['page_class'][] = "front";
+    }else{
+        $variables['page_class'][] = "not-front";
+    }
+
+    $node = \Drupal::routeMatch()->getParameter('node');
+    $view = \Drupal::routeMatch()->getParameter('view_id');
+    $term = \Drupal::routeMatch()->getParameter('taxonomy_term');
+    $product = \Drupal::routeMatch()->getParameter('commerce_product');
+
+    // Добавляем к page класс ноды
+    if(isset($node)) {
+        if ($node instanceof Node) {
+            $variables['page_class'][] = 'page-node';
+            $variables['page_class'][] = 'page-node--' . $node->id();
+            $variables['page_class'][] = 'page-node-type--' . $node->bundle();
+        }
+        else {
+            $variables['page_class'][] = 'page-node';
+            $variables['page_class'][] = 'page-node--' . $node->id();
+        }
+    }
+    // Добавляем к page класс представления
+    if(isset($view)) {
+        if(isset($term)) {
+            if ($term instanceof \Drupal\taxonomy\Entity\Term) {
+                $term_id = $term->bundle();
+                $variables['page_class'][] = 'page-taxonomy-term';
+                $variables['page_class'][] = 'page-taxonomy-term--' . $term_id;
+            }
+        }
+        else{
+            $variables['page_class'][] = 'page-view';
+            $variables['page_class'][] = 'page-view--'.$view;
+        }
+    }
+    // Добавляем к page класс продукта
+    if(isset($product)) {
+        if ($product instanceof \Drupal\commerce_product\Entity\ProductInterface) {
+            $product_type = $product->bundle(); // Получить тип продукта
+            $variables['page_class'][] = 'page-product';
+            $variables['page_class'][] = 'page-product-type--' . $product_type;
+        }
+    }
+    // Добавляем к page класс термина
+    if(isset($term)) {
+        if ($term instanceof \Drupal\taxonomy\Entity\Term) {
+            $term_id = $term->bundle();
+            $variables['page_class'][] = 'page-taxonomy-term';
+            $variables['page_class'][] = 'page-taxonomy-term--' . $term_id;
+        }
+    }
+}
+
+//добавляет классы в body
+function set_body_classes(&$variables){
+    // Добавляем к body класс пользователя
+    $current_user = \Drupal::currentUser();
+    $roles = $current_user->getRoles();
+
+    if (in_array('administrator', $roles)) {
+        $variables['attributes']['class'][] = 'user-administrator';
+    } else if (in_array('authenticated', $roles)) {
+        $variables['attributes']['class'][] = 'user-authenticated';
+    } else {
+        $variables['attributes']['class'][] = 'user-anonymous';
+    }// Добавляем к body класс ноды
+    $node = \Drupal::routeMatch()->getParameter('node');
+
+    if(isset($node)) {
+        if ($node instanceof Node) {
+            $variables['attributes']['class'][] = 'page-node';
+            $variables['attributes']['class'][] = 'page-node--' . $node->id();
+            $variables['attributes']['class'][] = 'page-node-type--' . $node->bundle();
+        }
+        else {
+            $variables['attributes']['class'][] = 'page-node';
+            $variables['attributes']['class'][] = 'page-node--' . $node->id();
+        }
+    }
+
+    $view = \Drupal::routeMatch()->getParameter('view_id');
+    $term = \Drupal::routeMatch()->getParameter('taxonomy_term');
+    $product = \Drupal::routeMatch()->getParameter('commerce_product');
+    // Добавляем к body класс представления
+    if(isset($view)) {
+        if(isset($term)) {
+            if ($term instanceof \Drupal\taxonomy\Entity\Term) {
+                $term_id = $term->bundle();
+                $variables['attributes']['class'][] = 'page-taxonomy-term';
+                $variables['attributes']['class'][] = 'page-taxonomy-term--' . $term_id;
+            }
+        }
+        else{
+            $variables['attributes']['class'][] = 'page-view';
+            $variables['attributes']['class'][] = 'page-view--'.$view;
+        }
+    }
+    // Добавляем к body класс продукта
+    if(isset($product)) {
+        if ($product instanceof \Drupal\commerce_product\Entity\ProductInterface) {
+            $product_type = $product->bundle(); // Получить тип продукта
+            $variables['attributes']['class'][] = 'page-product';
+            $variables['attributes']['class'][] = 'page-product-type--' . $product_type;
+        }
+    }
+    // Добавляем к body класс термина
+    if(isset($term)) {
+        if ($term instanceof \Drupal\taxonomy\Entity\Term) {
+            $term_id = $term->bundle();
+            $variables['attributes']['class'][] = 'page-taxonomy-term';
+            $variables['attributes']['class'][] = 'page-taxonomy-term--' . $term_id;
+        }
+    }
+}
+
 function vesta_core_preprocess_page(&$variables, $hook) {
     $variables['page_is_front'] = is_front_page();
+    $variables['page_is_product'] = is_product_page();
+    $variables['page_is_view'] = is_view_page();
+    $variables['page_is_term'] = is_term_page();
+
+    set_page_classes($variables);
+}
+function vesta_core_preprocess_html(&$variables, $hook) {
+    // Добавляем к body класс главной страницы
+    $variables['attributes']['class'][] = \Drupal::service('path.matcher')->isFrontPage() ? 'front' : 'not-front';
+
+    if (function_exists('setTitleFront')) {
+        $variables['head_title']['title'] = setTitleFront();
+    }
+    set_body_classes($variables);
 }
 
 //добавляет дополнительные переменные в поля для получения более точной информации
@@ -43,8 +238,18 @@ function vesta_core_preprocess_field(&$variables, $hook) {
     if (count($parts) >= 2) {
         $secondWord = $parts[1];
     }
+
     $variables['page_title'] = $title;
     $variables['page_type'] = $secondWord;
-
     $variables['page_is_front'] = is_front_page();
+}
+
+function drupal_get_module_path($module){
+    // Получаем путь до папки модуля vesta_user_account.
+    $module_path = \Drupal::moduleHandler()->getModule($module)->getPath();
+    if(!empty($module_path)){
+        return $module_path;
+    }else{
+        return 'error module path';
+    }
 }
