@@ -1,0 +1,8 @@
+name: Города по саб доменам
+type: module
+description: Встраивает возможность смены различной информации при смене доменов
+package: Vesta
+core_version_requirement: ^9 || ^10
+configure: cities_subdomains.settings_form
+dependencies:
+  - vesta_core

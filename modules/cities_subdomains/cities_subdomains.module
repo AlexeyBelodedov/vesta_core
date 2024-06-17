@@ -1,0 +1,92 @@
+<?php
+use Drupal\Core\Render\Markup;
+use Drupal\Core\Render\BubbleableMetadata;
+function getThisUrl(){
+    $url = $_SERVER['HTTP_HOST'];
+    return $url;
+}
+function setSelectOptionCities($url){
+    $config = \Drupal::config('cities_subdomains.settings');
+
+    $taxonomy = $config->get('taxonomy_name');//машинное имя словаря таксаномии
+    $field_city = $config->get('name_field_city');//название поля с названием города
+
+    $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree($taxonomy);
+    $option_html = '';
+    $select_html = '<select name="cities" id="cities-select">';
+    foreach ($terms as $term) {
+        $term_entity = \Drupal\taxonomy\Entity\Term::load($term->tid);
+        $term_name = $term_entity->getName();
+        $field_city_value = $term_entity->get($field_city)->value;
+        $url_page = $_SERVER['REQUEST_URI'];
+        $url_page = explode('?', $url_page);
+        $url_page = $url_page[0];
+        if ($term_name == $url) {
+            $term_url = $url;
+            $select_html .= '<option selected value="http://'.$term_url . $url_page .'">'.$field_city_value.'</option>';
+        }else{
+            $select_html .= '<option value="http://'.$term_name . $url_page .'">'.$field_city_value.'</option>';
+        }
+    }
+
+    $select_html .= '</select>';
+    return $select_html;
+}
+function getTermDomain($url){
+    $config = \Drupal::config('cities_subdomains.settings');
+
+    $taxonomy = $config->get('taxonomy_name');//машинное имя словаря таксономии
+    $field_city = $config->get('name_field_city');//название поля с названием города
+    $field_title_index = $config->get('name_field_title_index'); // название поля с H1 на главной
+    $title_site_index = $config->get('name_site_title_index'); // название поля с title на главной
+    $title_banner_category = $config->get('name_field_title_banner_category');// название поля с H1 на странице категории
+
+    $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree($taxonomy);
+    $return_array = array();
+    foreach ($terms as $term) {
+        $term_entity = \Drupal\taxonomy\Entity\Term::load($term->tid);
+        $term_name = $term_entity->getName();
+        if($term_name == $url){
+
+            $field_city_value = $term_entity->get($field_city)->value;
+            $field_title_index_value = $term_entity->get($field_title_index)->value;
+            $title_site_index_value = $term_entity->get($title_site_index)->value;
+            $title_banner_category_value = $term_entity->get($title_banner_category)->value;
+
+            $return_array['city_value'] = $field_city_value;
+            $return_array['title_index_value'] = $field_title_index_value;
+            $return_array['title_site_index'] = $title_site_index_value;
+            $return_array['title_banner_category'] = $title_banner_category_value;
+        }
+    }
+    return $return_array;
+}
+
+//добавляет дополнительное поле page_is_front которое возвращает true/false в зависимости от страницы
+function subdomain_info($var){
+    $return = getTermDomain(getThisUrl());
+    return $return[$var];
+}
+
+function setTitleFront() {//cities_subdomains_preprocess_html
+    $requestStack = \Drupal::service('request_stack');
+    $site_name = \Drupal::config('system.site')->get('name');
+    $request = $requestStack->getCurrentRequest();
+    $path = $request->getPathInfo();
+    $route_match = \Drupal::routeMatch();
+    $title = \Drupal::service('title_resolver')->getTitle($request, $route_match->getRouteObject());
+    if($path == '/') {
+        $new_title = subdomain_info('title_site_index');
+        if($new_title != ''){
+            $title = $new_title . ' | ' . $site_name;
+        }
+        //$variables['head_title']['title'] = Markup::create($title);
+        //$variables['head_title']['title'] = $title;
+    }
+    return $title;
+}
+function cities_subdomains_page_attachments(array &$attachments) {
+
+    // Unconditionally attach an asset to the page.
+    $attachments['#attached']['library'][] = 'cities_subdomains/select';
+}

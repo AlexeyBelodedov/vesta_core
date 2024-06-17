@@ -1,0 +1,6 @@
+cities_subdomains.settings_form:
+  title: 'Города по саб доменам'
+  description: 'Встраивает возможность смены различной информации при смене доменов'
+  parent: system.admin_config_system
+  route_name: cities_subdomains.settings_form
+  weight: 2

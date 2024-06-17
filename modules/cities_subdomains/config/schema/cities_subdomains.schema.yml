@@ -1,0 +1,17 @@
+# Schema for the configuration files of the Дополнительные поля module.
+cities_subdomains.settings:
+  type: config_object
+  label: 'города по саб доменам settings'
+  mapping:
+    taxonomy_name:
+      type: string
+      label: ''
+    name_field_city:
+      type: string
+      label: ''
+    name_field_title_index:
+      type: string
+      label: ''
+    name_site_title_index:
+      type: string
+      label: ''

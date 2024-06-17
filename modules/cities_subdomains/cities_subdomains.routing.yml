@@ -1,0 +1,7 @@
+cities_subdomains.settings_form:
+  path: '/admin/config/system/cities-subdomains'
+  defaults:
+    _title: 'Дополнительные поля'
+    _form: 'Drupal\cities_subdomains\Form\SettingsForm'
+  requirements:
+    _permission: 'cities_subdomains'
