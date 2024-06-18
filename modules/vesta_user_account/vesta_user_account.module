@@ -46,10 +46,10 @@ function set_new_user_pages($route_name, array &$suggestions, array &$variables)
             || $route_name == 'user.login'
             || $route_name == 'user.register'
             || $route_name == 'user.pass') {
-//            $url = \Drupal\Core\Url::fromRoute('user.page');
-//            $response = new \Symfony\Component\HttpFoundation\RedirectResponse($url->toString());
-//            $response->send();
-//            exit;
+            $url = \Drupal\Core\Url::fromRoute('user.page');
+            $response = new \Symfony\Component\HttpFoundation\RedirectResponse($url->toString());
+            $response->send();
+            exit;
         }
     }else{
         if ($route_name == 'user.login'
